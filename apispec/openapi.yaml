@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: Idea Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local environment
+paths:
+  /ideas:
+    post:
+      tags:
+        - Idea
+      operationId: createIdea
+      summary: Create a new idea
+      description: Creates a new idea with the provided information.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaCreationRequest'
+      responses:
+        '201':
+          description: Idea created successfully
+          headers:
+            Location:
+              description: URL of the created idea
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaCreationResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /ideas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Idea
+      operationId: readIdea
+      summary: Read an existing idea
+      description: Read an existing idea.
+      responses:
+        '200':
+          description: Read an idea successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaDetailResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Idea not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Idea
+      operationId: updateIdea
+      summary: Update an existing idea
+      description: Updates an existing idea.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaUpdateRequest'
+      responses:
+        '200':
+          description: Idea updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    IdeaCreationRequest:
+      type: object
+      required:
+        - workspaceId
+        - title
+        - content
+      properties:
+        workspaceId:
+          type: string
+          nullable: false
+        superId:
+          type: string
+          nullable: true
+        title:
+          type: string
+          minLength: 0
+          nullable: false
+        content:
+          type: string
+          minLength: 0
+          nullable: false
+    IdeaCreationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    IdeaDetailResponse:
+      type: object
+      required:
+        - id
+        - rootId
+        - workspaceId
+        - title
+        - content
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+        superId:
+          type: string
+        rootId:
+          type: string
+        workspaceId:
+          type: string
+        title:
+          type: string
+          minLength: 0
+        content:
+          type: string
+          minLength: 0
+        createdAt:
+          type: integer
+          format: int64
+        createdBy:
+          type: string
+        updatedAt:
+          type: integer
+          format: int64
+        updatedBy:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    EmptyResponse:
+      type: object
+    IdeaUpdateRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        superId:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: false
+        content:
+          type: string
+          nullable: false
+
